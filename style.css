@@ -1,0 +1,78 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+    color: #333;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.container {
+    width: 80%; /* Adjust the width as needed */
+}
+
+h1, h2 {
+    color: #ff5733; /* Coral */
+}
+
+label {
+    color: #333;
+}
+
+input, button, select {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input {
+    background-color: #fff;
+    color: #333;
+}
+
+button {
+    background-color: #ff5733; /* Coral */
+    color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ff8c66; /* Lighter Coral on Hover */
+}
+
+select {
+    background-color: #fff;
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+li:hover {
+    background-color: #f2f2f2; /* Lighter Gray on Hover */
+}
+
+/* New style for the like button */
+li button.likeButton {
+    background-color: #FF69B4; /* Pink */
+    color: #fff;
+    margin-left: 10px;/* Adjust the margin as needed */
+}

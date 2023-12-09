@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C4C Message Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Landing Page with Login -->
+<div id="landingPage">
+    <h1>Welcome to C4C Message Board</h1>
+    <label for="username">Username:</label>
+    <input type="text" id="username" placeholder="Enter your username">
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- Main App Content -->
+<div id="appContent" style="display: none;">
+    <h1>C4C Message Board</h1>
+
+    <!-- Textbox for new entry -->
+    <label for="newEntry">New Post:</label>
+    <input type="text" id="newEntry" placeholder="Type your entry">
+    <button onclick="addEntry()">Share!</button>
+
+    <!-- Dropdown menu for sorting options -->
+    <label for="sortOption">Sort by:</label>
+    <select id="sortOption" onchange="fetchEntries()">
+        <option value="likes_asc">Most Popular</option>
+        <option value="likes_desc">Least Popular</option>
+        <option value="time_asc">Oldest</option>
+        <option value="time_desc">Newest</option>
+    </select>
+
+    <!-- Display all entries -->
+    <h2>All Entries:</h2>
+    <ul id="entriesList"></ul>
+</div>
+
+<script>
+    const urlDomain = process.env.URL_DOMAIN
+    const backendBaseUrl = `http://${process.env.URL_DOMAIN}:8080/api`; // Replace with your backend's IP and port
+    let usr = 'username';
+
+    // Function to handle login
+    function login() {
+        const usernameInput = document.getElementById("username");
+        const username = usernameInput.value;
+        usr = username;
+
+        // Make a login request to the backend
+        fetch(`${backendBaseUrl}/login/${encodeURIComponent(username)}`, {
+            method: 'POST'
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'SUCCESS') {
+                    // If login is successful, show the app content and hide the login page
+                    document.getElementById("landingPage").style.display = "none";
+                    document.getElementById("appContent").style.display = "block";
+                    // Fetch entries after login
+                    fetchEntries();
+                    console.log("HERE");
+                } else {
+                    // Handle the failure case (you may want to show an error message)
+                    console.log('Login failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+            });
+    }
+
+    // Function to add a new entry
+    function addEntry() {
+        const newEntryInput = document.getElementById("newEntry");
+        const content = newEntryInput.value;
+
+        // Reset the input field
+        newEntryInput.value = "";
+
+        // Make an AddEntry request to the backend
+        //HERE: Use the username set at login
+        fetch(`${backendBaseUrl}/addEntry/${usr}/${encodeURIComponent(content)}`, {
+            method: 'POST'
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'SUCCESS') {
+                    // If the entry was added successfully, refresh the entries, print success
+                    console.log('Success');
+                    fetchEntries();
+                } else {
+                    // Handle the failure case (you may want to show an error message)
+                    console.log('Failed to add entry');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding entry:', error);
+            });
+    }
+
+    // Function to handle likes
+    function likeEntry(position) {
+        // Make a LikeEntry request to the backend
+        fetch(`${backendBaseUrl}/like/${position}`, {
+            method: 'POST'
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'SUCCESS') {
+                    // If the like was successful, refresh the entries
+                    fetchEntries();
+                } else {
+                    // Handle the failure case (you may want to show an error message)
+                    console.log('Failed to like entry');
+                }
+            })
+            .catch(error => {
+                console.error('Error liking entry:', error);
+            });
+    }
+
+    function fetchEntries() {
+        const entriesList = document.getElementById("entriesList");
+        const sortOption = document.getElementById("sortOption").value;
+
+        // Make a GET request to the backend to fetch entries with the selected sorting option
+        fetch(`${backendBaseUrl}/entries/${sortOption}`)
+            .then(response => response.json())
+            .then(entries => {
+                // Clear the existing entries
+                entriesList.innerHTML = "";
+
+                // Display each entry in the list with a like button
+                entries.forEach((entry, index) => {
+                    const listItem = document.createElement("li");
+                    listItem.innerHTML = `
+                        <span>${entry.username}: ${entry.content}</span>
+                        <br>
+                        <span>Likes: ${entry.likes}</span>
+                        <button class="likeButton" onclick="likeEntry(${index})">Like</button>
+                    `;
+                    entriesList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching entries:', error);
+            });
+    }
+
+</script>
+
+</body>
+</html>
